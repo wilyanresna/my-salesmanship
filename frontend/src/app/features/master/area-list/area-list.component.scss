@@ -1,0 +1,144 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  .header-title {
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin: 4px 0 0 0;
+    }
+  }
+}
+
+.action-card {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: #ffffff;
+
+  .action-content {
+    padding: 16px !important;
+  }
+
+  .add-form {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .input-field {
+      width: 320px;
+      max-width: 100%;
+
+      ::ng-deep {
+        .mat-mdc-text-field-wrapper {
+          background: #f8fafc !important;
+          border-radius: 8px !important;
+        }
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+      }
+    }
+
+    .save-btn {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      height: 44px;
+      border-radius: 8px;
+    }
+  }
+}
+
+.list-card {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  overflow: hidden;
+  background: #ffffff;
+
+  .list-content {
+    padding: 0 !important;
+  }
+}
+
+.table-responsive {
+  width: 100%;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    color: #475569;
+    font-weight: 600;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  td {
+    padding: 12px 24px;
+    font-size: 14px;
+    color: #334155;
+    font-family: 'Inter', sans-serif;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tr:hover td {
+    background-color: #f8fafc;
+  }
+}
+
+.id-col {
+  width: 80px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.name-display {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.name-edit {
+  .edit-input {
+    width: 100%;
+    margin: -8px 0;
+    
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background: #ffffff !important;
+        border-radius: 6px !important;
+      }
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+    }
+  }
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 32px !important;
+  color: #64748b !important;
+  font-weight: 500;
+}

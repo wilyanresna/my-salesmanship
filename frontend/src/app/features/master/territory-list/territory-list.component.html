@@ -1,0 +1,118 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-title">
+      <h1>Master Territory</h1>
+      <p class="subtitle">Kelola pembagian territory (wilayah kerja di bawah area)</p>
+    </div>
+  </div>
+
+  <!-- Add Territory Card -->
+  <mat-card class="action-card shadow-premium">
+    <mat-card-content class="action-content">
+      <div class="add-form">
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-label>Pilih Area</mat-label>
+          <mat-select [(value)]="newAreaId">
+            <mat-option *ngFor="let area of areas" [value]="area.id">
+              {{ area.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Nama Territory Baru</mat-label>
+          <input matInput [(ngModel)]="newName" placeholder="Contoh: Semarang, Solo...">
+        </mat-form-field>
+        
+        <button mat-flat-button color="primary" (click)="onCreate()" [disabled]="!newName.trim() || !newAreaId" class="save-btn">
+          <mat-icon>add</mat-icon>
+          Tambah Territory
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filter Card -->
+  <mat-card class="filter-card shadow-premium">
+    <mat-card-content class="filter-content">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Filter berdasarkan Area</mat-label>
+        <mat-select [(value)]="filterAreaId" (selectionChange)="applyFilter()">
+          <mat-option [value]="null">Semua Area</mat-option>
+          <mat-option *ngFor="let area of areas" [value]="area.id">
+            {{ area.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- List Card -->
+  <mat-card class="list-card shadow-premium">
+    <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+    
+    <mat-card-content class="list-content">
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Area</th>
+              <th>Nama Territory</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of filteredTerritories">
+              <td class="id-col">{{ t.id }}</td>
+              <td>
+                <div *ngIf="editingId !== t.id" class="relation-display">{{ t.area?.name || 'Unknown' }}</div>
+                <div *ngIf="editingId === t.id" class="relation-edit">
+                  <mat-form-field appearance="outline" class="edit-select">
+                    <mat-select [(value)]="editAreaId">
+                      <mat-option *ngFor="let area of areas" [value]="area.id">
+                        {{ area.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </td>
+              <td>
+                <div *ngIf="editingId !== t.id" class="name-display">{{ t.name }}</div>
+                <div *ngIf="editingId === t.id" class="name-edit">
+                  <mat-form-field appearance="outline" class="edit-input">
+                    <input matInput [(ngModel)]="editName">
+                  </mat-form-field>
+                </div>
+              </td>
+              <td>
+                <!-- Actions NOT editing -->
+                <div *ngIf="editingId !== t.id" class="actions-cell">
+                  <button mat-icon-button color="accent" (click)="onStartEdit(t)" matTooltip="Edit Territory">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="onDelete(t.id!)" matTooltip="Hapus Territory">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                
+                <!-- Actions editing -->
+                <div *ngIf="editingId === t.id" class="actions-cell">
+                  <button mat-icon-button color="primary" (click)="onSaveEdit(t.id!)" [disabled]="!editName.trim() || !editAreaId" matTooltip="Simpan">
+                    <mat-icon>check</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="onCancelEdit()" matTooltip="Batal">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredTerritories.length === 0 && !isLoading">
+              <td colspan="4" class="no-data">Tidak ada data territory terdaftar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

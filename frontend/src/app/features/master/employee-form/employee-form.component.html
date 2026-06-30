@@ -1,0 +1,82 @@
+<h2 mat-dialog-title class="dialog-title">
+  {{ isEditMode ? 'Edit Karyawan' : 'Tambah Karyawan Baru' }}
+</h2>
+
+<form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="dialog-content">
+    <div class="form-grid">
+      <!-- Nama Lengkap -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nama Lengkap</mat-label>
+        <input matInput formControlName="name" placeholder="Nama Karyawan">
+        <mat-error *ngIf="employeeForm.get('name')?.hasError('required')">
+          Nama wajib diisi
+        </mat-error>
+      </mat-form-field>
+
+      <!-- NIK -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>NIK</mat-label>
+        <input matInput formControlName="nik" placeholder="Nomor Induk Karyawan">
+        <mat-error *ngIf="employeeForm.get('nik')?.hasError('required')">
+          NIK wajib diisi
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Nomor Telepon -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>No. Telepon</mat-label>
+        <input matInput formControlName="phone" placeholder="Contoh: 0812...">
+      </mat-form-field>
+
+      <!-- Username -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="Username untuk login">
+        <mat-error *ngIf="employeeForm.get('username')?.hasError('required')">
+          Username wajib diisi
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" placeholder="{{ isEditMode ? 'Kosongkan jika tidak diganti' : 'Minimal 6 karakter' }}">
+        <mat-error *ngIf="employeeForm.get('password')?.hasError('required')">
+          Password wajib diisi
+        </mat-error>
+        <mat-error *ngIf="employeeForm.get('password')?.hasError('minlength')">
+          Password minimal 6 karakter
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Jabatan / Posisi -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Jabatan</mat-label>
+        <mat-select formControlName="position">
+          <mat-option value="SALES">Salesman</mat-option>
+          <mat-option value="SPV">Supervisor</mat-option>
+        </mat-select>
+        <mat-error *ngIf="employeeForm.get('position')?.hasError('required')">
+          Jabatan wajib dipilih
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Status Aktif -->
+      <div class="toggle-container half-width">
+        <mat-checkbox formControlName="is_active" color="primary">Karyawan Aktif</mat-checkbox>
+      </div>
+
+      <!-- Alamat -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Alamat Rumah</mat-label>
+        <textarea matInput formControlName="address" rows="3" placeholder="Alamat lengkap rumah"></textarea>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button type="button" (click)="onCancel()">Batal</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="employeeForm.invalid">Simpan</button>
+  </mat-dialog-actions>
+</form>

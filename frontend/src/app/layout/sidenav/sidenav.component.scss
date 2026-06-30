@@ -1,0 +1,210 @@
+.sidenav-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 260px;
+  background: #0f172a; // Slate 900 (ultra premium dark)
+  color: #cbd5e1;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0 25px rgba(15, 23, 42, 0.15);
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.03);
+
+  &.collapsed {
+    width: 70px;
+
+    .logo-area {
+      padding: 16px 0;
+      justify-content: center;
+    }
+
+    .logo-icon-wrapper {
+      margin-right: 0;
+    }
+
+    .nav-item {
+      justify-content: center;
+      padding: 12px 0;
+      margin: 4px 8px;
+      border-radius: 8px;
+      width: calc(100% - 16px);
+    }
+  }
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  transition: all 0.3s;
+
+  .logo-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    border-radius: 8px;
+    margin-right: 12px;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+
+    .logo-icon {
+      color: #ffffff;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .logo-text {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 0 16px 16px 16px;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 18px;
+  margin: 4px 16px;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: calc(100% - 32px);
+  position: relative;
+  outline: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: #f8fafc;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+
+    .nav-icon {
+      color: #ffffff;
+    }
+  }
+
+  .nav-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: transform 0.2s;
+  }
+
+  .nav-text {
+    margin-left: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    flex-grow: 1;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .chevron {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-left: auto;
+    transition: transform 0.3s ease;
+  }
+}
+
+.submenu-container {
+  margin-bottom: 4px;
+
+  &.open {
+    .chevron {
+      transform: rotate(180deg);
+    }
+  }
+
+  .submenu-toggle {
+    margin-bottom: 0;
+  }
+}
+
+.submenu-items {
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  margin-top: 4px;
+  animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+  .submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    margin: 2px 16px 2px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+
+    &:hover {
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    &.active {
+      color: #60a5fa;
+      font-weight: 600;
+      background: rgba(59, 130, 246, 0.05);
+
+      .submenu-icon {
+        color: #60a5fa;
+      }
+    }
+
+    .submenu-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 12px;
+      color: inherit;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

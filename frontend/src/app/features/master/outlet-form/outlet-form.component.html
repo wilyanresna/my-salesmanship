@@ -1,0 +1,94 @@
+<h2 mat-dialog-title class="dialog-title">
+  {{ isEditMode ? 'Edit Outlet' : 'Tambah Outlet Baru' }}
+</h2>
+
+<form [formGroup]="outletForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="dialog-content">
+    <div class="form-grid">
+      <!-- Nama Outlet -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nama Outlet</mat-label>
+        <input matInput formControlName="name" placeholder="Nama Toko / Outlet">
+        <mat-error *ngIf="outletForm.get('name')?.hasError('required')">
+          Nama outlet wajib diisi
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Kode Barcode -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Kode Barcode</mat-label>
+        <input matInput formControlName="barcode" placeholder="Contoh: OUTLET001">
+        <mat-error *ngIf="outletForm.get('barcode')?.hasError('required')">
+          Kode barcode wajib diisi
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Nama Pemilik -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Nama Pemilik</mat-label>
+        <input matInput formControlName="owner_name" placeholder="Nama Pemilik Toko">
+      </mat-form-field>
+
+      <!-- No. Telepon -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>No. Telepon</mat-label>
+        <input matInput formControlName="phone" placeholder="Contoh: 0812...">
+      </mat-form-field>
+
+      <!-- Siklus Kunjungan (Call Cycle) -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Siklus Kunjungan</mat-label>
+        <mat-select formControlName="call_cycle">
+          <mat-option value="DAILY">Harian (Daily)</mat-option>
+          <mat-option value="WEEKLY">Mingguan (Weekly)</mat-option>
+          <mat-option value="BIWEEKLY">Dua Mingguan (Biweekly)</mat-option>
+        </mat-select>
+        <mat-error *ngIf="outletForm.get('call_cycle')?.hasError('required')">
+          Siklus kunjungan wajib dipilih
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Status Outlet -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Status Outlet</mat-label>
+        <mat-select formControlName="outlet_status">
+          <mat-option value="ACTIVE">Aktif (Active)</mat-option>
+          <mat-option value="INACTIVE">Non-aktif (Inactive)</mat-option>
+          <mat-option value="POTENTIAL">Potensial (Potential)</mat-option>
+        </mat-select>
+        <mat-error *ngIf="outletForm.get('outlet_status')?.hasError('required')">
+          Status outlet wajib dipilih
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Lat -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Latitude (GPS)</mat-label>
+        <input matInput formControlName="lat" placeholder="Contoh: -6.200000">
+        <mat-error *ngIf="outletForm.get('lat')?.hasError('pattern')">
+          Format latitude tidak valid
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Lng -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Longitude (GPS)</mat-label>
+        <input matInput formControlName="lng" placeholder="Contoh: 106.816666">
+        <mat-error *ngIf="outletForm.get('lng')?.hasError('pattern')">
+          Format longitude tidak valid
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Alamat -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Alamat Lengkap</mat-label>
+        <textarea matInput formControlName="address" rows="3" placeholder="Alamat lengkap lokasi outlet"></textarea>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button type="button" (click)="onCancel()">Batal</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="outletForm.invalid">Simpan</button>
+  </mat-dialog-actions>
+</form>

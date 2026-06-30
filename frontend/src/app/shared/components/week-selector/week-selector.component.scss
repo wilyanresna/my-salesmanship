@@ -1,0 +1,46 @@
+.week-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.picker-field {
+  width: 280px;
+  max-width: 100%;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background: #ffffff !important;
+      border-radius: 8px !important;
+    }
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+}
+
+.range-badge {
+  display: flex;
+  align-items: center;
+  background: rgba(79, 70, 229, 0.06);
+  color: #4f46e5;
+  padding: 8px 16px;
+  border-radius: 8px;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  border: 1px solid rgba(79, 70, 229, 0.1);
+  height: 48px;
+  box-sizing: border-box;
+
+  .badge-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .badge-text {
+    font-size: 13.5px;
+  }
+}

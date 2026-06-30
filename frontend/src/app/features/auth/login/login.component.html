@@ -1,0 +1,49 @@
+<div class="login-wrapper">
+  <!-- Gradient background blobs -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+
+  <!-- Login Card Container -->
+  <div class="login-container glass-panel shadow-premium">
+    <div class="login-header">
+      <div class="logo-box">
+        <mat-icon class="logo-icon">local_shipping</mat-icon>
+      </div>
+      <h1>Salesmanship</h1>
+      <p class="subtitle">Supervisor Portal Access</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Username Field -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username" placeholder="Masukkan username" autocomplete="username">
+        <mat-icon matSuffix class="field-icon">person</mat-icon>
+        <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+          Username wajib diisi
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password Field -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" placeholder="Masukkan password" autocomplete="current-password">
+        <mat-icon matSuffix class="field-icon">lock</mat-icon>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          Password wajib diisi
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+          Password minimal 6 karakter
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Submit Button -->
+      <button mat-flat-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading" class="login-btn">
+        <span *ngIf="!isLoading">Masuk</span>
+        <div class="btn-spinner-container" *ngIf="isLoading">
+          <mat-progress-bar mode="indeterminate" class="btn-loader"></mat-progress-bar>
+        </div>
+      </button>
+    </form>
+  </div>
+</div>

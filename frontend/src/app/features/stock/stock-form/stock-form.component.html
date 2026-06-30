@@ -1,0 +1,82 @@
+<h2 mat-dialog-title class="dialog-title">Buat Alokasi Stok Baru</h2>
+
+<div class="loader-container" *ngIf="isLoading">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<form [formGroup]="stockForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+  <mat-dialog-content class="dialog-content">
+    <div class="form-header-grid">
+      <!-- Salesman Select -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Pilih Salesman</mat-label>
+        <mat-select formControlName="sales_id">
+          <mat-option *ngFor="let sales of salesmen" [value]="sales.id">
+            {{ sales.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="stockForm.get('sales_id')?.hasError('required')">
+          Salesman wajib dipilih
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Tanggal Kerja -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Tanggal Penggunaan</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date_used" readonly>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="stockForm.get('date_used')?.hasError('required')">
+          Tanggal penggunaan wajib diisi
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Cigarettes Grid -->
+    <h3 class="section-title">Alokasi SKU Barang</h3>
+    <div formArrayName="items" class="items-container">
+      <div *ngFor="let item of items.controls; let i=index" [formGroupName]="i" class="item-row card-item shadow-premium">
+        <div class="item-name-block">
+          <span class="sku-label">{{ item.get('sku')?.value }}</span>
+          <span class="product-name">{{ item.get('product_name')?.value }}</span>
+        </div>
+
+        <div class="inputs-grid">
+          <!-- Dus -->
+          <mat-form-field appearance="outline" class="qty-field">
+            <mat-label>DUS</mat-label>
+            <input matInput type="number" formControlName="qty_dus_init" min="0">
+          </mat-form-field>
+
+          <!-- Bal -->
+          <mat-form-field appearance="outline" class="qty-field">
+            <mat-label>BAL</mat-label>
+            <input matInput type="number" formControlName="qty_bal_init" min="0">
+          </mat-form-field>
+
+          <!-- Slop -->
+          <mat-form-field appearance="outline" class="qty-field">
+            <mat-label>SLOP</mat-label>
+            <input matInput type="number" formControlName="qty_slf_init" min="0">
+          </mat-form-field>
+
+          <!-- Bungkus -->
+          <mat-form-field appearance="outline" class="qty-field">
+            <mat-label>BKS</mat-label>
+            <input matInput type="number" formControlName="qty_bks_init" min="0">
+          </mat-form-field>
+        </div>
+
+        <div class="total-display">
+          <span class="total-label">Total Bungkus:</span>
+          <span class="total-value">{{ calculateTotalBungkus(item) | number }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button type="button" (click)="onCancel()">Batal</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="stockForm.invalid">Simpan</button>
+  </mat-dialog-actions>
+</form>

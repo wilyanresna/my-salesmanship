@@ -1,0 +1,104 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-title">
+      <h1>Stok Distribusi</h1>
+      <p class="subtitle">Kelola alokasi stok rokok harian untuk dibawa salesman ke lapangan</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openAddDialog()" class="add-btn">
+      <mat-icon>add</mat-icon>
+      Buat Stok Baru
+    </button>
+  </div>
+
+  <!-- Filter Card -->
+  <mat-card class="filter-card shadow-premium">
+    <mat-card-content class="filter-content">
+      <div class="filter-row">
+        <!-- Salesman Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filter Salesman</mat-label>
+          <mat-select [(value)]="filterSalesId" (selectionChange)="applyFilters()">
+            <mat-option [value]="null">Semua Salesman</mat-option>
+            <mat-option *ngFor="let sales of salesmen" [value]="sales.id">
+              {{ sales.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Status Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filter Status</mat-label>
+          <mat-select [(value)]="filterStatus" (selectionChange)="applyFilters()">
+            <mat-option value="">Semua Status</mat-option>
+            <mat-option value="DRAFT">DRAFT</mat-option>
+            <mat-option value="READY">READY</mat-option>
+            <mat-option value="PULLED">PULLED</mat-option>
+            <mat-option value="CLOSED">CLOSED</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Date Filter -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Tanggal Penggunaan</mat-label>
+          <input matInput [matDatepicker]="fPicker" [(ngModel)]="filterDate" (dateChange)="applyFilters()" readonly>
+          <mat-datepicker-toggle matSuffix [for]="fPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fPicker></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-stroked-button (click)="resetFilters()" class="reset-btn">
+          Reset Filter
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Stock List Card -->
+  <mat-card class="list-card shadow-premium">
+    <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+    <mat-card-content class="list-content">
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Salesman</th>
+              <th>Tanggal Kerja</th>
+              <th>Status</th>
+              <th>Dibuat Oleh</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of filteredStocks">
+              <td class="id-col">{{ s.id }}</td>
+              <td class="bold-text">{{ s.sales?.name || 'Unknown' }}</td>
+              <td class="date-text">{{ s.date_used | date:'dd MMM yyyy' }}</td>
+              <td>
+                <span class="status-badge" [class.draft]="s.status === 'DRAFT'" [class.ready]="s.status === 'READY'" [class.pulled]="s.status === 'PULLED'" [class.closed]="s.status === 'CLOSED'">
+                  {{ s.status }}
+                </span>
+              </td>
+              <td>{{ s.creator?.name || 'System' }}</td>
+              <td>
+                <div class="actions-cell">
+                  <!-- Detail Button -->
+                  <button mat-icon-button color="primary" (click)="viewDetail(s)" matTooltip="Lihat Detail Barang">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  
+                  <!-- Publish/Draft Button -->
+                  <button mat-icon-button color="accent" *ngIf="s.status === 'DRAFT' || s.status === 'READY'" (click)="toggleStatus(s)" matTooltip="{{ s.status === 'DRAFT' ? 'Publish Stok (Set READY)' : 'Kembalikan ke DRAFT' }}">
+                    <mat-icon>{{ s.status === 'DRAFT' ? 'send' : 'undo' }}</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredStocks.length === 0 && !isLoading">
+              <td colspan="6" class="no-data">Tidak ada data alokasi stok terdaftar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

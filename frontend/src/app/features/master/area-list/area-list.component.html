@@ -1,0 +1,80 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-title">
+      <h1>Master Area</h1>
+      <p class="subtitle">Kelola pembagian area penjualan regional</p>
+    </div>
+  </div>
+
+  <!-- Add Area Card -->
+  <mat-card class="action-card shadow-premium">
+    <mat-card-content class="action-content">
+      <div class="add-form">
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Nama Area Baru</mat-label>
+          <input matInput [(ngModel)]="newName" placeholder="Contoh: Jawa Tengah, Jawa Barat...">
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="onCreate()" [disabled]="!newName.trim()" class="save-btn">
+          <mat-icon>add</mat-icon>
+          Tambah Area
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- List Card -->
+  <mat-card class="list-card shadow-premium">
+    <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+    
+    <mat-card-content class="list-content">
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Area</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let area of areas">
+              <td class="id-col">{{ area.id }}</td>
+              <td>
+                <div *ngIf="editingId !== area.id" class="name-display">{{ area.name }}</div>
+                <div *ngIf="editingId === area.id" class="name-edit">
+                  <mat-form-field appearance="outline" class="edit-input">
+                    <input matInput [(ngModel)]="editName">
+                  </mat-form-field>
+                </div>
+              </td>
+              <td>
+                <!-- Action buttons when NOT editing -->
+                <div *ngIf="editingId !== area.id" class="actions-cell">
+                  <button mat-icon-button color="accent" (click)="onStartEdit(area)" matTooltip="Edit Area">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="onDelete(area.id!)" matTooltip="Hapus Area">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                
+                <!-- Action buttons when editing -->
+                <div *ngIf="editingId === area.id" class="actions-cell">
+                  <button mat-icon-button color="primary" (click)="onSaveEdit(area.id!)" [disabled]="!editName.trim()" matTooltip="Simpan">
+                    <mat-icon>check</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="onCancelEdit()" matTooltip="Batal">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="areas.length === 0 && !isLoading">
+              <td colspan="3" class="no-data">Belum ada data area terdaftar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

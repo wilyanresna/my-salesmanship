@@ -1,0 +1,95 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-title">
+      <h1>Mapping Outlet</h1>
+      <p class="subtitle">Petakan Outlet ke Rute Kunjungan harian per minggu</p>
+    </div>
+  </div>
+
+  <!-- Add Mapping Card -->
+  <mat-card class="action-card shadow-premium">
+    <mat-card-header class="form-header">
+      <mat-card-title>Buat Mapping Baru</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="action-content">
+      <div class="mapping-form">
+        <!-- Outlet Select -->
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-label>Pilih Outlet</mat-label>
+          <mat-select [(value)]="selectedOutletId">
+            <mat-option *ngFor="let o of outlets" [value]="o.id">
+              {{ o.name }} (Barcode: {{ o.barcode }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Route Select -->
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-label>Pilih Rute</mat-label>
+          <mat-select [(value)]="selectedRouteId">
+            <mat-option *ngFor="let r of routes" [value]="r.id">
+              {{ r.name }} (District: {{ r.district?.name }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Week Selector -->
+        <app-week-selector (weekSelected)="onWeekSelected($event)"></app-week-selector>
+        
+        <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!selectedOutletId || !selectedRouteId || !weekStart" class="save-btn">
+          <mat-icon>save</mat-icon>
+          Simpan Mapping
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filter Card -->
+  <mat-card class="filter-card shadow-premium">
+    <mat-card-content class="filter-content">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Filter berdasarkan Rute</mat-label>
+        <mat-select [(value)]="filterRouteId" (selectionChange)="applyFilter()">
+          <mat-option [value]="null">Semua Rute</mat-option>
+          <mat-option *ngFor="let r of routes" [value]="r.id">
+            {{ r.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Mappings List Card -->
+  <mat-card class="list-card shadow-premium">
+    <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+    <mat-card-content class="list-content">
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Outlet</th>
+              <th>Rute Kunjungan</th>
+              <th>District</th>
+              <th>Week Mulai</th>
+              <th>Week Selesai</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of filteredMappings">
+              <td class="id-col">{{ m.id }}</td>
+              <td class="bold-text">{{ m.outlet?.name || 'Unknown' }}</td>
+              <td>{{ m.route?.name || 'Unknown' }}</td>
+              <td>{{ m.route?.district?.name || 'Unknown' }}</td>
+              <td class="date-text">{{ m.week_start | date:'dd MMM yyyy' }}</td>
+              <td class="date-text">{{ m.week_end | date:'dd MMM yyyy' }}</td>
+            </tr>
+            <tr *ngIf="filteredMappings.length === 0 && !isLoading">
+              <td colspan="6" class="no-data">Belum ada data mapping terdaftar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

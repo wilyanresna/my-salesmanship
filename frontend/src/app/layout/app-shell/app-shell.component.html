@@ -1,0 +1,53 @@
+<div class="shell-container">
+  <!-- Sidenav -->
+  <app-sidenav [isCollapsed]="isCollapsed"></app-sidenav>
+
+  <!-- Right Side Panel -->
+  <div class="main-panel">
+    <!-- Top Header -->
+    <header class="top-header glass-panel shadow-premium">
+      <button mat-icon-button (click)="toggleSidenav()" class="menu-toggle-btn">
+        <mat-icon>{{ isCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+
+      <span class="page-title text-gradient">Supervisor Portal</span>
+
+      <div class="spacer"></div>
+
+      <!-- Info & User Controls -->
+      <div class="user-controls" *ngIf="currentUser$ | async as user">
+        <!-- Active Week Badge -->
+        <div class="info-badge">
+          <mat-icon class="badge-icon">calendar_today</mat-icon>
+          <span class="badge-text">{{ activeWeek }}</span>
+        </div>
+
+        <!-- User Profile Menu -->
+        <button mat-button [matMenuTriggerFor]="profileMenu" class="profile-btn">
+          <div class="avatar">
+            {{ user.name.charAt(0).toUpperCase() }}
+          </div>
+          <span class="profile-name">{{ user.name }}</span>
+          <mat-icon class="profile-arrow">arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #profileMenu="matMenu" xPosition="before" class="profile-dropdown-menu">
+          <div class="menu-header">
+            <div class="menu-name">{{ user.name }}</div>
+            <div class="menu-role">{{ user.position }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon class="logout-icon">logout</mat-icon>
+            <span>Log Out</span>
+          </button>
+        </mat-menu>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="content-area">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

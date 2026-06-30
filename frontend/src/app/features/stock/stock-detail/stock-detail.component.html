@@ -1,0 +1,60 @@
+<h2 mat-dialog-title class="dialog-title">Detail Alokasi Stok</h2>
+
+<div class="loader-container" *ngIf="isLoading">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div class="detail-container" *ngIf="!isLoading">
+  <mat-dialog-content class="dialog-content">
+    <!-- Header info card -->
+    <div class="info-card glass-panel shadow-premium">
+      <div class="info-item">
+        <span class="info-label">Salesman</span>
+        <span class="info-value">{{ stock.sales?.name || 'Unknown' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Tanggal Kerja</span>
+        <span class="info-value">{{ stock.date_used | date:'dd MMM yyyy' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Status</span>
+        <span class="status-badge" [class.draft]="stock.status === 'DRAFT'" [class.ready]="stock.status === 'READY'" [class.pulled]="stock.status === 'PULLED'" [class.closed]="stock.status === 'CLOSED'">
+          {{ stock.status }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Items list table -->
+    <h3 class="section-title">Daftar Barang Alokasi</h3>
+    <div class="table-responsive">
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Nama Produk</th>
+            <th>DUS</th>
+            <th>BAL</th>
+            <th>SLOP</th>
+            <th>BKS</th>
+            <th class="right-align">Total Bks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items">
+            <td><span class="sku-badge">{{ item.product?.sku }}</span></td>
+            <td class="bold-text">{{ item.product?.name }}</td>
+            <td>{{ item.qty_dus_init }}</td>
+            <td>{{ item.qty_bal_init }}</td>
+            <td>{{ item.qty_slf_init }}</td>
+            <td>{{ item.qty_bks_init }}</td>
+            <td class="bold-text right-align highlight-text">{{ calculateTotalBungkus(item) | number }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-flat-button color="primary" (click)="onClose()">Tutup</button>
+  </mat-dialog-actions>
+</div>

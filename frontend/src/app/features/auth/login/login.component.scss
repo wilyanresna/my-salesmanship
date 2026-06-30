@@ -1,0 +1,194 @@
+.login-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0f172a; // Slate 900
+  overflow: hidden;
+}
+
+// Custom background blobs for premium aesthetic
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 1;
+  opacity: 0.35;
+}
+
+.blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, #4f46e5 0%, #312e81 100%);
+}
+
+.blob-2 {
+  bottom: -15%;
+  right: -15%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, #1e3a8a 0%, #1e1b4b 100%);
+}
+
+.login-container {
+  position: relative;
+  z-index: 5;
+  width: 440px;
+  max-width: 90vw;
+  padding: 48px 40px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  animation: cardFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36px;
+
+  .logo-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    border-radius: 16px;
+    box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+    margin-bottom: 20px;
+
+    .logo-icon {
+      color: #ffffff;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 6px 0 0 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  width: 100%;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background: rgba(30, 41, 59, 0.4) !important;
+      border-radius: 10px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+    }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mdc-notched-outline__leading,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mdc-notched-outline__notch,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mdc-notched-outline__trailing {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__leading,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__notch,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline__trailing {
+      border-color: #6366f1 !important;
+    }
+
+    .mat-mdc-form-field-label {
+      color: #94a3b8 !important;
+    }
+
+    .mat-mdc-input-element {
+      color: #ffffff !important;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+    }
+  }
+
+  .field-icon {
+    color: #64748b;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.login-btn {
+  height: 48px !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  font-family: 'Outfit', sans-serif !important;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3) !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+  margin-top: 8px;
+
+  &:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
+  }
+
+  &:disabled {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: none !important;
+  }
+}
+
+.btn-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-loader {
+  width: 60px;
+  height: 4px;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

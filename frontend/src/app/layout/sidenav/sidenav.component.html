@@ -1,0 +1,119 @@
+<div class="sidenav-container" [class.collapsed]="isCollapsed">
+  <!-- Sidenav Logo Header -->
+  <div class="logo-area">
+    <div class="logo-icon-wrapper">
+      <mat-icon class="logo-icon">local_shipping</mat-icon>
+    </div>
+    <span class="logo-text" *ngIf="!isCollapsed">SALESMANSHIP</span>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Nav Menu Links -->
+  <div class="nav-links">
+    <!-- Dashboard Link -->
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" matTooltip="Dashboard" [matTooltipDisabled]="!isCollapsed">
+      <mat-icon class="nav-icon">dashboard</mat-icon>
+      <span class="nav-text" *ngIf="!isCollapsed">Dashboard</span>
+    </a>
+
+    <!-- Master Data Submenu Toggle -->
+    <div class="submenu-container" [class.open]="isExpanded('master')">
+      <button (click)="toggleSubmenu('master')" class="nav-item submenu-toggle" matTooltip="Master Data" [matTooltipDisabled]="!isCollapsed">
+        <mat-icon class="nav-icon">storage</mat-icon>
+        <span class="nav-text" *ngIf="!isCollapsed">Master Data</span>
+        <mat-icon class="chevron" *ngIf="!isCollapsed">expand_more</mat-icon>
+      </button>
+      
+      <!-- Master Submenu Items -->
+      <div class="submenu-items" *ngIf="isExpanded('master')">
+        <a routerLink="/master/employees" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">people</mat-icon>
+          <span>Employees</span>
+        </a>
+        <a routerLink="/master/outlets" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">storefront</mat-icon>
+          <span>Outlets</span>
+        </a>
+        <a routerLink="/master/areas" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">map</mat-icon>
+          <span>Areas</span>
+        </a>
+        <a routerLink="/master/territories" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">location_city</mat-icon>
+          <span>Territories</span>
+        </a>
+        <a routerLink="/master/districts" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">layers</mat-icon>
+          <span>Districts</span>
+        </a>
+        <a routerLink="/master/routes" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">alt_route</mat-icon>
+          <span>Routes</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Weekly Mapping Submenu Toggle -->
+    <div class="submenu-container" [class.open]="isExpanded('mapping')">
+      <button (click)="toggleSubmenu('mapping')" class="nav-item submenu-toggle" matTooltip="Weekly Mapping" [matTooltipDisabled]="!isCollapsed">
+        <mat-icon class="nav-icon">calendar_view_week</mat-icon>
+        <span class="nav-text" *ngIf="!isCollapsed">Weekly Mapping</span>
+        <mat-icon class="chevron" *ngIf="!isCollapsed">expand_more</mat-icon>
+      </button>
+
+      <!-- Mapping Submenu Items -->
+      <div class="submenu-items" *ngIf="isExpanded('mapping')">
+        <a routerLink="/mapping/spv" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">assignment_ind</mat-icon>
+          <span>Mapping Spv</span>
+        </a>
+        <a routerLink="/mapping/sales" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">badge</mat-icon>
+          <span>Mapping Sales</span>
+        </a>
+        <a routerLink="/mapping/outlet" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">location_on</mat-icon>
+          <span>Mapping Outlet</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stok Distribusi Link -->
+    <a routerLink="/stock" routerLinkActive="active" class="nav-item" matTooltip="Stok Distribusi" [matTooltipDisabled]="!isCollapsed">
+      <mat-icon class="nav-icon">inventory_2</mat-icon>
+      <span class="nav-text" *ngIf="!isCollapsed">Stok Distribusi</span>
+    </a>
+
+    <!-- Target Sales Link -->
+    <a routerLink="/target" routerLinkActive="active" class="nav-item" matTooltip="Target Sales" [matTooltipDisabled]="!isCollapsed">
+      <mat-icon class="nav-icon">track_changes</mat-icon>
+      <span class="nav-text" *ngIf="!isCollapsed">Target Sales</span>
+    </a>
+
+    <!-- Laporan Submenu Toggle -->
+    <div class="submenu-container" [class.open]="isExpanded('reports')">
+      <button (click)="toggleSubmenu('reports')" class="nav-item submenu-toggle" matTooltip="Laporan" [matTooltipDisabled]="!isCollapsed">
+        <mat-icon class="nav-icon">assessment</mat-icon>
+        <span class="nav-text" *ngIf="!isCollapsed">Laporan</span>
+        <mat-icon class="chevron" *ngIf="!isCollapsed">expand_more</mat-icon>
+      </button>
+
+      <!-- Reports Submenu Items -->
+      <div class="submenu-items" *ngIf="isExpanded('reports')">
+        <a routerLink="/reports/visits" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">near_me</mat-icon>
+          <span>Kunjungan</span>
+        </a>
+        <a routerLink="/reports/sales" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">payments</mat-icon>
+          <span>Penjualan</span>
+        </a>
+        <a routerLink="/reports/achievement" routerLinkActive="active" class="submenu-item">
+          <mat-icon class="submenu-icon">military_tech</mat-icon>
+          <span>Achievement</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

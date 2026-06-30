@@ -1,0 +1,188 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .header-title {
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin: 4px 0 0 0;
+    }
+  }
+
+  .add-btn {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    height: 44px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15);
+  }
+}
+
+.filter-card {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: #ffffff;
+
+  .filter-content {
+    padding: 16px !important;
+  }
+
+  .search-field {
+    width: 320px;
+    max-width: 100%;
+
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background: #f8fafc !important;
+        border-radius: 8px !important;
+      }
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+    }
+  }
+}
+
+.table-card {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  overflow: hidden;
+  background: #ffffff;
+
+  .table-content {
+    padding: 0 !important;
+  }
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    color: #475569 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    font-family: 'Inter', sans-serif !important;
+    background-color: #f8fafc !important;
+    padding: 16px 24px !important;
+  }
+
+  td {
+    padding: 12px 24px !important;
+    font-size: 14px !important;
+    color: #334155 !important;
+    font-family: 'Inter', sans-serif !important;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tr:hover td {
+    background-color: #f8fafc;
+  }
+}
+
+.outlet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .outlet-name {
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .outlet-address {
+    font-size: 12px;
+    color: #64748b;
+  }
+}
+
+.barcode-badge {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  color: #334155;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.cycle-badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  &.daily {
+    background-color: rgba(56, 189, 248, 0.08);
+    color: #0369a1;
+  }
+
+  &.weekly {
+    background-color: rgba(139, 92, 246, 0.08);
+    color: #6d28d9;
+  }
+
+  &.biweekly {
+    background-color: rgba(249, 115, 22, 0.08);
+    color: #c2410c;
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  &.active {
+    background-color: rgba(16, 185, 129, 0.08);
+    color: #047857;
+  }
+
+  &.inactive {
+    background-color: rgba(244, 63, 94, 0.08);
+    color: #be123c;
+  }
+
+  &.potential {
+    background-color: rgba(245, 158, 11, 0.08);
+    color: #b45309;
+  }
+}
+
+.no-data-row {
+  td {
+    text-align: center;
+    padding: 32px !important;
+    color: #64748b !important;
+    font-weight: 500;
+  }
+}

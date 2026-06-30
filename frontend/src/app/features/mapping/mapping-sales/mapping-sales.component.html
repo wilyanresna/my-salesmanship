@@ -1,0 +1,92 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-title">
+      <h1>Mapping Salesman</h1>
+      <p class="subtitle">Petakan Salesman ke Supervisor dan District operasional per minggu</p>
+    </div>
+  </div>
+
+  <!-- Add Mapping Card -->
+  <mat-card class="action-card shadow-premium">
+    <mat-card-header class="form-header">
+      <mat-card-title>Buat Mapping Baru</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="action-content">
+      <div class="mapping-form">
+        <!-- SPV Select -->
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-label>Pilih Supervisor</mat-label>
+          <mat-select [(value)]="selectedSpvId">
+            <mat-option *ngFor="let spv of spvs" [value]="spv.id">
+              {{ spv.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Salesman Select -->
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-label>Pilih Salesman</mat-label>
+          <mat-select [(value)]="selectedSalesId">
+            <mat-option *ngFor="let sales of salesmen" [value]="sales.id">
+              {{ sales.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- District Select -->
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-label>Pilih District</mat-label>
+          <mat-select [(value)]="selectedDistrictId">
+            <mat-option *ngFor="let d of districts" [value]="d.id">
+              {{ d.name }} (Territory: {{ d.territory?.name }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Week Selector -->
+        <app-week-selector (weekSelected)="onWeekSelected($event)"></app-week-selector>
+        
+        <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!selectedSpvId || !selectedSalesId || !selectedDistrictId || !weekStart" class="save-btn">
+          <mat-icon>save</mat-icon>
+          Simpan Mapping
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Mappings List Card -->
+  <mat-card class="list-card shadow-premium">
+    <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+    <mat-card-content class="list-content">
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Supervisor</th>
+              <th>Salesman</th>
+              <th>District</th>
+              <th>Territory</th>
+              <th>Week Mulai</th>
+              <th>Week Selesai</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of mappings">
+              <td class="id-col">{{ m.id }}</td>
+              <td>{{ m.spv?.name || 'Unknown' }}</td>
+              <td class="bold-text">{{ m.sales?.name || 'Unknown' }}</td>
+              <td>{{ m.district?.name || 'Unknown' }}</td>
+              <td>{{ m.district?.territory?.name || 'Unknown' }}</td>
+              <td class="date-text">{{ m.week_start | date:'dd MMM yyyy' }}</td>
+              <td class="date-text">{{ m.week_end | date:'dd MMM yyyy' }}</td>
+            </tr>
+            <tr *ngIf="mappings.length === 0 && !isLoading">
+              <td colspan="7" class="no-data">Belum ada data mapping terdaftar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

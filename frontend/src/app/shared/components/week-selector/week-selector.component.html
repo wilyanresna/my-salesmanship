@@ -1,0 +1,13 @@
+<div class="week-selector-container">
+  <mat-form-field appearance="outline" class="picker-field">
+    <mat-label>Pilih Tanggal (Senin - Minggu)</mat-label>
+    <input matInput [matDatepicker]="picker" [value]="selectedDate" (dateChange)="onDateChange($event)" readonly>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  
+  <div class="range-badge shadow-premium">
+    <mat-icon class="badge-icon">event</mat-icon>
+    <span class="badge-text">{{ displayRange }}</span>
+  </div>
+</div>
