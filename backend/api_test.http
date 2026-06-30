@@ -1,0 +1,259 @@
+@baseUrl = http://localhost:8080/api/v1
+@spv_token = <Paste Supervisor Access Token Here>
+@sales_token = <Paste Salesman Access Token Here>
+
+### 1. Health Check
+GET http://localhost:8080/api/health
+
+### 2. Login as Supervisor
+# @name loginSpv
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "budi.spv",
+  "password": "password123"
+}
+
+### 3. Login as Salesman
+# @name loginSales
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "andi.sales",
+  "password": "password123"
+}
+
+### 4. Refresh Access Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "replace_with_refresh_token"
+}
+
+### 5. Change Password (Protected)
+PUT {{baseUrl}}/auth/password
+Authorization: Bearer {{sales_token}}
+Content-Type: application/json
+
+{
+  "old_password": "password123",
+  "new_password": "newpassword123"
+}
+
+### 6. GET Products (All Roles)
+GET {{baseUrl}}/master/products
+Authorization: Bearer {{sales_token}}
+
+### 7. GET Global Params (All Roles)
+GET {{baseUrl}}/master/params
+Authorization: Bearer {{sales_token}}
+
+### 8. List Areas (Supervisor Only)
+GET {{baseUrl}}/master/areas
+Authorization: Bearer {{spv_token}}
+
+### 9. Create Area (Supervisor Only)
+POST {{baseUrl}}/master/areas
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "name": "Jawa Tengah"
+}
+
+### 10. Create Territory (Supervisor Only)
+POST {{baseUrl}}/master/territories
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "area_id": 1,
+  "name": "Semarang"
+}
+
+### 11. Create District (Supervisor Only)
+POST {{baseUrl}}/master/districts
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "territory_id": 1,
+  "name": "Semarang Tengah"
+}
+
+### 12. Create Route (Supervisor Only)
+POST {{baseUrl}}/master/routes
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "district_id": 1,
+  "name": "Semarang Tengah - Senin",
+  "day_of_week": 1
+}
+
+### 13. Create Outlet (Supervisor Only)
+POST {{baseUrl}}/master/outlets
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "name": "Toko Barokah",
+  "barcode": "OTL-BAR-001",
+  "outlet_status": "ACTIVE"
+}
+
+### 14. Create Employee (Supervisor Only)
+POST {{baseUrl}}/master/employees
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "name": "Joko Sales",
+  "nik": "SLS-JKO-001",
+  "username": "joko.sales",
+  "password": "password123",
+  "position": "SALES",
+  "is_active": true
+}
+
+### 15. Create MappingSpv (Supervisor Only)
+POST {{baseUrl}}/mapping/spv
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "spv_id": 1,
+  "territory_id": 1,
+  "week_start": "2026-06-29",
+  "week_end": "2026-07-05"
+}
+
+### 16. Create MappingSales (Supervisor Only)
+POST {{baseUrl}}/mapping/sales
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "spv_id": 1,
+  "sales_id": 2,
+  "district_id": 1,
+  "week_start": "2026-06-29",
+  "week_end": "2026-07-05"
+}
+
+### 17. Create MappingOutlet (Supervisor Only)
+POST {{baseUrl}}/mapping/outlet
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "outlet_id": 1,
+  "route_id": 1,
+  "week_start": "2026-06-29",
+  "week_end": "2026-07-05"
+}
+
+### 18. Create Stock Allocation (Supervisor Only)
+POST {{baseUrl}}/stock/rokok
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "sales_id": 2,
+  "date_used": "2026-06-30",
+  "items": [
+    {
+      "product_id": 1,
+      "qty_dus_init": 1,
+      "qty_bal_init": 0,
+      "qty_slf_init": 5,
+      "qty_bks_init": 0
+    }
+  ]
+}
+
+### 19. Update Stock status to READY (Supervisor Only)
+# Assume Stock ID = 1
+PUT {{baseUrl}}/stock/rokok/1/status
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "status": "READY"
+}
+
+### 20. Create Weekly Target (Supervisor Only)
+POST {{baseUrl}}/target
+Authorization: Bearer {{spv_token}}
+Content-Type: application/json
+
+{
+  "sales_id": 2,
+  "route_id": 1,
+  "product_id": 1,
+  "target_qty": 150,
+  "week_start": "2026-06-29",
+  "week_end": "2026-07-05"
+}
+
+### 21. Pull Active Week Data (Salesman Only)
+GET {{baseUrl}}/pull
+Authorization: Bearer {{sales_token}}
+
+### 22. Upload visit transaction (Salesman Only)
+POST {{baseUrl}}/upload/visit
+Authorization: Bearer {{sales_token}}
+Content-Type: application/json
+
+{
+  "batch_id": "550e8400-e29b-41d4-a716-446655440000",
+  "visit": {
+    "outlet_id": 1,
+    "visit_no": 1,
+    "visit_type": "NORMAL",
+    "status": "CLOSED",
+    "start_time": "2026-06-30T08:15:00Z",
+    "end_time": "2026-06-30T08:45:00Z",
+    "lat": -6.2088,
+    "lng": 106.8456,
+    "check_stocks": [
+      {
+        "product_id": 1,
+        "stock_qty": 3
+      }
+    ],
+    "sales": [
+      {
+        "sales_order": "SO-TEST-100",
+        "details": [
+          {
+            "product_id": 1,
+            "qty": 2,
+            "price": 25000,
+            "total": 50000
+          }
+        ]
+      }
+    ]
+  }
+}
+
+### 23. GET Visits Report (Supervisor Only)
+GET {{baseUrl}}/report/visits?sales_id=2&date=2026-06-30
+Authorization: Bearer {{spv_token}}
+
+### 24. GET Sales Report (Supervisor Only)
+GET {{baseUrl}}/report/sales?sales_id=2&start_date=2026-06-29&end_date=2026-07-05
+Authorization: Bearer {{spv_token}}
+
+### 25. GET Stock Report (Supervisor Only)
+GET {{baseUrl}}/report/stock?sales_id=2&date=2026-06-30
+Authorization: Bearer {{spv_token}}
+
+### 26. GET Achievement Report (Supervisor Only)
+GET {{baseUrl}}/report/achievement?sales_id=2&date=2026-06-30
+Authorization: Bearer {{spv_token}}

@@ -1,9 +1,9 @@
 # Product Requirements Document (PRD)
 # Salesmanship — Aplikasi Distribusi Rokok
 
-**Versi:** 1.3
-**Tanggal:** 2026-06-29
-**Status:** In Review — Data Model Finalized
+**Versi:** 1.5
+**Tanggal:** 2026-06-30
+**Status:** Data Model Final — Siap Development
 
 ---
 
@@ -197,68 +197,150 @@ Callsheet adalah form utama yang diisi Sales di setiap outlet untuk setiap produ
 |                  VPS (Self-Hosted)                  |
 |                                                     |
 |  +--------------+       +------------------------+  |
-|  |  Go Backend  |<----->|  PostgreSQL Database   |  |
-|  |  (REST API)  |       +------------------------+  |
-|  +------+-------+                                   |
-|         | Docker Compose                             |
+|  |  Go Backend  |<----->|     PostgreSQL          |  |
+|  |  (REST API)  |       |  [Master]               |  |
+|  +------+-------+       |  [Staging Master]       |  |
+|         | Docker        |  [Staging Transaction]  |  |
+|         | Compose       +------------------------+  |
 +---------+-------------------------------------------+
           |
     +-----+------+
     |            |
     v            v
-+--------+  +--------------+
-|Angular |  | Android App  |
-|  Web   |  | (Kotlin +    |
-| (Spv)  |  |  Compose)    |
-+--------+  +------+-------+
-                   |
-            +------v-------+
-            | Room Database|
-            |  (Offline)   |
-            +--------------+
++--------+  +--------------------------+
+|Angular |  |      Android App         |
+|  Web   |  |  [Staging Master (snap)] |
+| (Spv)  |  |  [Transaction Local]     |
+| reads  |  |  [Param]                 |
+| from   |  |  Room Database (offline) |
+|Staging |  +-----+--------------------+
++--------+        |
+                  | sync (WorkManager)
+                  v
+             Backend Staging Transaction
 ```
 
-### 7.1 Offline-First Strategy (Android)
-1. **Read:** Selalu baca dari Room Database (lokal) terlebih dahulu.
-2. **Write:** Semua operasi tulis disimpan lokal, lalu di-queue untuk sync.
-3. **Sync:** WorkManager menjalankan sync task saat koneksi tersedia (constraint `NetworkType.CONNECTED`).
-4. **Conflict Resolution:** Server sebagai *source of truth* untuk data master; Android sebagai *source of truth* untuk data transaksi lapangan.
+### 7.1 Prinsip Arsitektur Data
+
+| Prinsip | Penjelasan |
+|---|---|
+| **Master is read-only for Android** | Android hanya membaca Master dari backend saat pull. Tidak ada write dari Android ke Master. |
+| **Weekly Mapping = snapshot** | MappingSpv, MappingSales, MappingOutlet bersifat weekly — mencerminkan kondisi distribusi minggu itu. Android download ini saat pull. |
+| **Transaksi Android → Server via batch** | Android generate UUID sebagai `batch_id`, lalu upload transaksi per kunjungan ke server. Server menyimpan data ini secara permanen. |
+| **SyncQueue = general retry mechanism** | Setiap entitas yang perlu di-sync masuk ke `SyncQueue`. WorkManager memproses antrian ini dan melakukan retry otomatis jika gagal. |
+| **Param = global static LOV** | Semua LOV (notasi, visit type, dll.) disimpan dalam satu tabel `Param` global, tidak terikat week. |
+| **StockRokok bersifat daily** | Satu Sales bisa punya beberapa `StockRokok` dalam satu week (satu per hari kerja). Week dihitung dari `date_used`. |
+
+### 7.2 Auto-Sync Flow (Setelah Setiap Kunjungan)
+
+```
+Sales selesai kunjungan (End Visit)
+           |
+           v
+  TrOutlet.status = CLOSED
+           |
+           v
+  SyncQueue entry dibuat:
+  entity_type = TrOutlet
+  entity_id   = TrOutlet.id
+  batch_id    = UUID baru
+  status      = PENDING
+           |
+           v
+  WorkManager cek koneksi
+     +-- Online  ---> Upload batch ke server (TrOutlet + TrCheckStock + TrSales + TrSalesDetail)
+     |                     |
+     |              Sukses: SyncQueue.status = SYNCED
+     |              Gagal:  SyncQueue.status = FAILED (retry otomatis berikutnya)
+     |
+     +-- Offline --> Tunggu, WorkManager retry saat koneksi tersedia
+```
 
 ---
 
-## 8. Data Model (High-Level)
+## 8. Data Model
 
-### 8.1 Entitas Master
+> Detail lengkap data model tersedia di [`docs/data-model.md`](data-model.md).
+> PRD ini menyajikan ringkasan per layer.
 
-| Entitas | Atribut Kunci |
-|---|---|
-| `Area` | id, name |
-| `Territory` | id, area_id, name, supervisor_id |
-| `District` | id, territory_id, name, **salesman_id UNIQUE** (1:1 dengan Sales) |
-| `Route` | id, district_id, name, day_of_week |
-| `Outlet` | id, route_id, name, address, owner_name, phone, lat, lng, barcode (Code-128), outlet_status, call_cycle |
-| `User` | id, name, nik, username, password_hash, role (spv/sales), phone, address |
-| `Product` | id, name, sku (UNIQUE), price, **uom_bal, uom_slf, uom_bks** (faktor konversi multi-UOM) |
-| `WeekPeriod` | id, week_number, year, date_start, date_end, is_active |
+> Arsitektur data terbagi menjadi dua dunia: **Server (PostgreSQL)** dan **Android (Room DB)**.
+> Keduanya tidak berbagi tabel secara langsung. Sync terjadi melalui REST API dengan pola `batch_id` (UUID).
 
-### 8.2 Entitas Transaksi
+---
 
-| Entitas | Atribut Kunci |
-|---|---|
-| `StockAllocation` | id, salesman_id, week_period_id, status (DRAFT/PULLED/CLOSED), created_by |
-| `StockAllocationItem` | id, stock_allocation_id, product_id, qty_dus, qty_bal, qty_slf, qty_bks (initial & sold & returned per UOM) |
-| `SalesTarget` | id, route_id, product_id, week_period_id, target_qty, created_by |
-| `RouteSession` | id, salesman_id, route_id, week_period_id, date, **time_start, time_end**, **lat_start, lng_start, lat_end, lng_end**, sync_status |
-| `Visit` | id, outlet_id, salesman_id, route_session_id, **call_start, call_end**, **actual_lat, actual_lng**, **is_out_of_route**, sync_status |
-| `Callsheet` | id, visit_id, product_id, **stock_qty** (cek stok di outlet), **buy_qty** (penjualan), price, total_price, notation_code |
-| `ReturRecap` | id, stock_allocation_id, product_id, qty_dus, qty_bal, qty_slf, qty_bks (sisa = initial - sold) |
+### 8.A — Server / Backend & Web Frontend (PostgreSQL)
 
-### 8.3 Entitas Referensi (LOV)
+#### Layer 1: Master
+Data canonical yang bersifat permanen. Android hanya membaca, tidak pernah menulis ke sini.
 
-| Entitas | Atribut Kunci |
-|---|---|
-| `NotationCode` | id, code, name, description (notasi distribusi: Normal, OOS, dll.) |
-| `OutletStatus` | id, code, name (Aktif, Non-Aktif, dll.) |
+| # | Tabel | Fungsi | Dikelola oleh |
+|---|---|---|---|
+| 1 | `Employee` | Data Spv dan Sales | Seed |
+| 2 | `Area` | Master Area | Seed |
+| 3 | `Territory` | Master Territory | Seed |
+| 4 | `District` | Master District | Seed |
+| 5 | `Route` | Master Route | Seed |
+| 6 | `Outlet` | Data master Outlet | Seed / Spv |
+| 7 | `Product` | Data Produk + multi-UOM | Seed |
+| 8 | `Param` | Semua LOV (global, static) | Seed |
+
+#### Layer 2: Transaksi Server (Weekly Mapping + Stok + Target)
+Dibuat dan dikelola Spv. Android men-download data ini saat pull.
+
+| # | Tabel | Fungsi | Bersifat |
+|---|---|---|---|
+| 9 | `MappingSpv` | Mapping Territory ↔ Spv | Weekly |
+| 10 | `MappingSales` | Mapping Sales ↔ Spv + District | Weekly |
+| 11 | `MappingOutlet` | Mapping Outlet ↔ Route | Weekly |
+| 12 | `StockRokok` | Header alokasi stok per Sales | Daily |
+| 13 | `StockRokokItem` | Detail stok per SKU (multi-UOM) | Daily |
+| 14 | `SalesTarget` | Target penjualan per Sales per Route | Weekly |
+
+#### Layer 3: Transaksi Upload dari Android
+Hasil upload transaksi Sales dari lapangan. Web membaca layer ini untuk laporan.
+Semua tabel di layer ini memiliki `batch_id` (UUID dari Android) dan `uploaded_at`.
+
+| # | Tabel | Fungsi | Sumber |
+|---|---|---|---|
+| 27 | `TrOutlet` | Header kunjungan per outlet | Upload Android |
+| 28 | `TrCheckStock` | Cek stok per outlet per produk | Upload Android |
+| 29 | `TrSales` | Header penjualan dalam kunjungan | Upload Android |
+| 30 | `TrSalesDetail` | Detail penjualan per SKU + snapshot price | Upload Android |
+
+---
+
+### 8.B — Android (Room Database — SQLite)
+
+Semua data di Room DB bersifat lokal dan offline-first.
+
+#### Layer 1: Master Android (Download dari Server)
+Data yang di-download saat pull. **Read-only** di Android.
+
+| # | Tabel (Room) | Fungsi | Sumber |
+|---|---|---|---|
+| 15 | `MstSalesman` | Data Salesman + Spv + District week ini | Join Employee + MappingSales |
+| 16 | `MstProduct` | Produk week berjalan | Product |
+| 17 | `MstOutlet` | Outlet yang masuk route Sales week ini | Join Outlet + MappingOutlet |
+| 18 | `Param` | LOV global | Param |
+| 19 | `StockRokok` | Header alokasi stok (server_id disimpan) | StockRokok |
+| 20 | `StockRokokItem` | Detail stok per SKU | StockRokokItem |
+| 21 | `SalesTarget` | Target per route per produk | SalesTarget |
+
+#### Layer 2: Transaksi Lokal Android
+Dibuat Sales di lapangan. Di-sync ke server setelah selesai kunjungan.
+
+| # | Tabel (Room) | Fungsi | Atribut Kunci |
+|---|---|---|---|
+| 22 | `TrOutlet` | Header per kunjungan outlet | id, outlet_id, visit_no, **visit_type** (NORMAL/OUT_OF_ROUTE), status, start_time, end_time, **lat, lng** |
+| 23 | `TrCheckStock` | Cek stok per outlet per produk | id, tr_outlet_id, product_id, stock_qty |
+| 24 | `TrSales` | Header penjualan | id, tr_outlet_id, sales_order |
+| 25 | `TrSalesDetail` | Detail per SKU + snapshot harga | id, tr_sales_id, product_id, qty, **price**, total |
+
+#### Layer 3: Utilitas
+
+| # | Tabel (Room) | Fungsi | Atribut Kunci |
+|---|---|---|---|
+| 26 | `SyncQueue` | Antrian sync general — semua entitas | id, entity_type, entity_id, **batch_id** (UUID), status (PENDING/SYNCING/SYNCED/FAILED) |
 
 ---
 
@@ -283,36 +365,36 @@ Pengembangan akan dilakukan secara berurutan:
 ```
 Prioritas 1 -> Backend (Go + PostgreSQL + Gin + GORM)
               +-- Setup project structure & Docker Compose
-              +-- Database schema design & GORM migrations
+              +-- Database schema & GORM migrations (Master + Transaksi + Upload)
               +-- Auth: JWT login, refresh token, ganti password
-              +-- API: Master Data (Area, Territory, District, Route, Outlet, User)
-              +-- API: WeekPeriod management
-              +-- API: Product (read + seed data)
-              +-- API: SalesTarget (CRUD by Spv)
-              +-- API: StockAllocation (CRUD by Spv, pull by Sales)
-              +-- API: Sync endpoint (upload RouteSession, Visit, Callsheet batch)
-              +-- API: Laporan (query hasil kunjungan untuk Web)
+              +-- API: Master Data (Employee, Area, Territory, District, Route, Outlet, Product, Param)
+              +-- API: Weekly Mapping (MappingSpv, MappingSales, MappingOutlet) — CRUD by Spv
+              +-- API: StockRokok + StockRokokItem — CRUD by Spv, pull by Sales
+              +-- API: SalesTarget — CRUD by Spv
+              +-- API: Pull endpoint — Sales download data week aktif
+              +-- API: Upload endpoint — terima batch transaksi dari Android (TrOutlet, TrCheckStock, TrSales, TrSalesDetail)
+              +-- API: Laporan — query hasil kunjungan untuk Web
 
 Prioritas 2 -> Android (Kotlin + Jetpack Compose)
               +-- Setup project + Room + WorkManager + Retrofit
               +-- Auth: login, JWT storage, auto refresh
-              +-- Pull data: outlet, stok, target, history callsheet
-              +-- Dashboard: route summary, achievement vs target
-              +-- Route Session: start/end route dengan GPS
-              +-- Kunjungan outlet: list view + scan barcode Code-128
-              +-- Callsheet: cek stok + penjualan + notasi per produk
-              +-- Retur recap: ringkasan sisa stok
-              +-- Background sync (WorkManager): upload ke server
+              +-- Pull data: MstSalesman, MstOutlet, MstProduct, Param, StockRokok, SalesTarget
+              +-- Dashboard: route summary, progress stok, achievement vs target
+              +-- Kunjungan outlet: list view + scan barcode Code-128 + GPS capture
+              +-- TrCheckStock: cek stok per produk
+              +-- TrSales + TrSalesDetail: penjualan per kunjungan (dengan price snapshot)
+              +-- SyncQueue: antrian general, trigger otomatis saat End Visit
+              +-- WorkManager: proses SyncQueue, retry jika FAILED
 
 Prioritas 3 -> Web Frontend (Angular)
               +-- Setup project & design system (bilingual toggle)
               +-- Auth: login Supervisor
-              +-- Master Data: CRUD outlet, user, route assignment
-              +-- WeekPeriod: buat & kelola periode mingguan
-              +-- Target: input target per route per produk
-              +-- Stok: buat alokasi stok distribusi Sales
-              +-- Dashboard: monitoring kunjungan, achievement vs target
-              +-- Retur: lihat rekap retur Sales
+              +-- Master Data: CRUD Employee, Outlet, dll.
+              +-- Weekly Mapping: atur MappingSpv, MappingSales, MappingOutlet per week
+              +-- StockRokok: buat alokasi stok harian Sales
+              +-- SalesTarget: input target per route per produk
+              +-- Dashboard: monitoring kunjungan, TrOutlet, TrCheckStock, TrSales
+              +-- Laporan: achievement vs target, retur stok
 ```
 
 ---
